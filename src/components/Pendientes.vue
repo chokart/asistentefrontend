@@ -12,7 +12,7 @@ interface Pendiente {
   dias?: number
 }
 
-const API_URL = 'http://localhost:8080/api/pendientes'
+const API_URL = import.meta.env.VITE_API_URL || 'https://apitres.suiteminerals.com/api/pendientes'
 const pendientes = ref<Pendiente[]>([])
 const editandoId = ref<number | null>(null)
 const nuevoPendiente = ref<Pendiente>({
