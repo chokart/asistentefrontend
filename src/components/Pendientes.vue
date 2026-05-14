@@ -16,7 +16,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://apitres.suiteminerals.c
 const pendientes = ref<Pendiente[]>([])
 const editandoId = ref<number | null>(null)
 const filtroTexto = ref('')
-const filtroEstado = ref('Todos')
+const filtroEstado = ref('Pendiente')
 
 const nuevoPendiente = ref<Pendiente>({
   descripcion: '',
