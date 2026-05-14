@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 
 interface Pendiente {
@@ -15,11 +15,27 @@ interface Pendiente {
 const API_URL = import.meta.env.VITE_API_URL || 'https://apitres.suiteminerals.com/api/pendientes'
 const pendientes = ref<Pendiente[]>([])
 const editandoId = ref<number | null>(null)
+const filtroTexto = ref('')
+const filtroEstado = ref('Todos')
+
 const nuevoPendiente = ref<Pendiente>({
   descripcion: '',
   area: '',
   responsable: '',
   estado: 'Pendiente'
+})
+
+const pendientesFiltrados = computed(() => {
+  return pendientes.value.filter(p => {
+    const coincideTexto = 
+      p.descripcion.toLowerCase().includes(filtroTexto.value.toLowerCase()) ||
+      p.area.toLowerCase().includes(filtroTexto.value.toLowerCase()) ||
+      p.responsable.toLowerCase().includes(filtroTexto.value.toLowerCase())
+    
+    const coincideEstado = filtroEstado.value === 'Todos' || p.estado === filtroEstado.value
+
+    return coincideTexto && coincideEstado
+  })
 })
 
 const cargarPendientes = async () => {
@@ -109,6 +125,16 @@ onMounted(cargarPendientes)
 
     <!-- Tabla -->
     <div class="card">
+      <div class="filter-bar">
+        <input v-model="filtroTexto" placeholder="🔍 Buscar por descripción, área o responsable..." type="text" class="search-input" />
+        <select v-model="filtroEstado" class="status-filter">
+          <option value="Todos">Todos los estados</option>
+          <option>Pendiente</option>
+          <option>En Proceso</option>
+          <option>Completado</option>
+        </select>
+      </div>
+
       <table>
         <thead>
           <tr>
@@ -122,7 +148,7 @@ onMounted(cargarPendientes)
           </tr>
         </thead>
         <tbody>
-          <tr v-for="p in pendientes" :key="p.id" :class="{ 'row-editing': editandoId === p.id }">
+          <tr v-for="p in pendientesFiltrados" :key="p.id" :class="{ 'row-editing': editandoId === p.id }">
             <td>{{ p.descripcion }}</td>
             <td>{{ p.area }}</td>
             <td>{{ p.responsable }}</td>
@@ -143,14 +169,30 @@ onMounted(cargarPendientes)
           </tr>
         </tbody>
       </table>
-      <p v-if="pendientes.length === 0" style="text-align: center; padding: 1rem;">
-        No hay pendientes registrados.
+      <p v-if="pendientesFiltrados.length === 0" style="text-align: center; padding: 1rem;">
+        No se encontraron pendientes con esos criterios.
       </p>
     </div>
   </div>
 </template>
 
 <style scoped>
+.filter-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 2;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.status-filter {
+  flex: 1;
+  padding: 10px;
+}
 .container {
   max-width: 1200px;
   margin: 0 auto;
