@@ -135,40 +135,42 @@ onMounted(cargarPendientes)
         </select>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Descripción</th>
-            <th>Área</th>
-            <th>Responsable</th>
-            <th>Estado</th>
-            <th>Fecha Creación</th>
-            <th>Días Activo</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="p in pendientesFiltrados" :key="p.id" :class="{ 'row-editing': editandoId === p.id }">
-            <td>{{ p.descripcion }}</td>
-            <td>{{ p.area }}</td>
-            <td>{{ p.responsable }}</td>
-            <td>
-              <span :class="'badge ' + p.estado.toLowerCase().replace(' ', '-')">
-                {{ p.estado }}
-              </span>
-            </td>
-            <td>{{ p.fechaCreacion }}</td>
-            <td>{{ p.dias }}</td>
-            <td>
-              <div class="action-buttons">
-                <button v-if="p.estado !== 'Completado'" @click="completarPendiente(p)" class="btn-success" title="Completar">✓</button>
-                <button @click="editarPendiente(p)" class="btn-edit" title="Editar">✎</button>
-                <button @click="eliminarPendiente(p.id!)" class="btn-danger" title="Eliminar">🗑</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Área</th>
+              <th>Responsable</th>
+              <th>Estado</th>
+              <th>Fecha Creación</th>
+              <th>Días Activo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="p in pendientesFiltrados" :key="p.id" :class="{ 'row-editing': editandoId === p.id }">
+              <td>{{ p.descripcion }}</td>
+              <td>{{ p.area }}</td>
+              <td>{{ p.responsable }}</td>
+              <td>
+                <span :class="'badge ' + p.estado.toLowerCase().replace(' ', '-')">
+                  {{ p.estado }}
+                </span>
+              </td>
+              <td>{{ p.fechaCreacion }}</td>
+              <td>{{ p.dias }}</td>
+              <td>
+                <div class="action-buttons">
+                  <button v-if="p.estado !== 'Completado'" @click="completarPendiente(p)" class="btn-success" title="Completar">✓</button>
+                  <button @click="editarPendiente(p)" class="btn-edit" title="Editar">✎</button>
+                  <button @click="eliminarPendiente(p.id!)" class="btn-danger" title="Eliminar">🗑</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <p v-if="pendientesFiltrados.length === 0" style="text-align: center; padding: 1rem;">
         No se encontraron pendientes con esos criterios.
       </p>
@@ -177,22 +179,6 @@ onMounted(cargarPendientes)
 </template>
 
 <style scoped>
-.filter-bar {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.search-input {
-  flex: 2;
-  padding: 10px;
-  font-size: 1rem;
-}
-
-.status-filter {
-  flex: 1;
-  padding: 10px;
-}
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -215,6 +201,23 @@ onMounted(cargarPendientes)
   align-items: center;
 }
 
+.filter-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 2;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.status-filter {
+  flex: 1;
+  padding: 10px;
+}
+
 .btn-group {
   display: flex;
   gap: 5px;
@@ -224,11 +227,20 @@ input, select {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  width: 100%; /* Asegura que ocupen el ancho de su celda */
+  box-sizing: border-box;
+}
+
+/* Contenedor de tabla para scroll horizontal en móvil */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px; /* Evita que la tabla se comprima demasiado */
 }
 
 th, td {
@@ -251,20 +263,71 @@ th {
   gap: 5px;
 }
 
-.btn-primary { background: #41b883; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+/* Botones y Badges */
+.btn-primary { background: #41b883; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: background 0.3s; }
+.btn-primary:hover { background: #3aa876; }
 .btn-secondary { background: #9e9e9e; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
-.btn-success { background: #4caf50; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
-.btn-edit { background: #2196f3; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
-.btn-danger { background: #ff5252; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+.btn-success { background: #4caf50; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+.btn-edit { background: #2196f3; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+.btn-danger { background: #ff5252; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
 
 .badge {
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.85rem;
   font-weight: bold;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .pendiente { background: #ffe082; color: #856404; }
 .en-proceso { background: #bbdefb; color: #004085; }
 .completado { background: #c8e6c9; color: #155724; }
+
+/* === MEDIA QUERIES PARA RESPONSIVIDAD === */
+
+@media (max-width: 992px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr; /* 2 columnas en tablets */
+  }
+  .form-grid > *:first-child {
+    grid-column: span 2; /* Descripción ocupa todo el ancho */
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr; /* 1 columna en celulares */
+  }
+  .form-grid > *:first-child {
+    grid-column: span 1;
+  }
+
+  .btn-group {
+    flex-direction: column;
+  }
+
+  .filter-bar {
+    flex-direction: column; /* Filtros uno sobre otro */
+    gap: 10px;
+  }
+
+  .search-input, .status-filter {
+    flex: none;
+    width: 100%;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+}
 </style>
